@@ -61,12 +61,19 @@ namespace AgendaBeca
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
             SqlCommand disableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto OFF", Context.con);
             disableIdentityInsertCmd.ExecuteNonQuery();
-            
+
             Context.con.Close();
 
             Repositorio repos = new Repositorio();
             repos.BinData(viewContactos);
 
+        }
+
+        private void Eliminar_Click(object sender, EventArgs e)
+        {
+            Context.con.Open();
+            SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id");
+            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
         }
 
         private void txtObservaciones_TextChanged(object sender, EventArgs e)
@@ -88,5 +95,6 @@ namespace AgendaBeca
         {
 
         }
+
     }
 }

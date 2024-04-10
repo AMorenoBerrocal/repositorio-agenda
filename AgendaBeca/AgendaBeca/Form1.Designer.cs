@@ -41,6 +41,7 @@
             id = new Label();
             aniadir = new Button();
             viewContactos = new DataGridView();
+            Eliminar = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
@@ -174,11 +175,22 @@
             viewContactos.TabIndex = 2;
             viewContactos.CellContentClick += dataGridView1_CellContentClick_1;
             // 
+            // Eliminar
+            // 
+            Eliminar.Location = new Point(196, 351);
+            Eliminar.Name = "Eliminar";
+            Eliminar.Size = new Size(112, 34);
+            Eliminar.TabIndex = 3;
+            Eliminar.Text = "Eliminar";
+            Eliminar.UseVisualStyleBackColor = true;
+            Eliminar.Click += Eliminar_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 734);
+            Controls.Add(Eliminar);
             Controls.Add(viewContactos);
             Controls.Add(aniadir);
             Controls.Add(groupBox1);
@@ -205,5 +217,6 @@
         private TextBox txtObservaciones;
         private Button aniadir;
         private DataGridView viewContactos;
+        private Button Eliminar;
     }
 }
