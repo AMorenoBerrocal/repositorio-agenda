@@ -39,7 +39,10 @@
             textBox3 = new TextBox();
             textBox4 = new TextBox();
             dateTimePicker1 = new DateTimePicker();
+            button1 = new Button();
+            dataGridView1 = new DataGridView();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
@@ -54,9 +57,9 @@
             groupBox1.Controls.Add(label1);
             groupBox1.Controls.Add(label2);
             groupBox1.Controls.Add(id);
-            groupBox1.Location = new Point(90, 60);
+            groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(698, 316);
+            groupBox1.Size = new Size(843, 316);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Contacto:";
@@ -137,7 +140,7 @@
             textBox4.Location = new Point(245, 178);
             textBox4.Multiline = true;
             textBox4.Name = "textBox4";
-            textBox4.Size = new Size(360, 113);
+            textBox4.Size = new Size(515, 113);
             textBox4.TabIndex = 7;
             // 
             // dateTimePicker1
@@ -149,16 +152,39 @@
             dateTimePicker1.TabIndex = 8;
             dateTimePicker1.ValueChanged += dateTimePicker1_ValueChanged;
             // 
+            // button1
+            // 
+            button1.Location = new Point(28, 351);
+            button1.Name = "button1";
+            button1.Size = new Size(112, 34);
+            button1.TabIndex = 1;
+            button1.Text = "Añadir";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Location = new Point(28, 407);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.RowHeadersWidth = 62;
+            dataGridView1.RowTemplate.Height = 33;
+            dataGridView1.Size = new Size(1050, 302);
+            dataGridView1.TabIndex = 2;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1150, 734);
+            Controls.Add(dataGridView1);
+            Controls.Add(button1);
             Controls.Add(groupBox1);
             Name = "Form1";
             Text = "Form1";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ResumeLayout(false);
         }
 
@@ -175,5 +201,7 @@
         private TextBox textBox2;
         private DateTimePicker dateTimePicker1;
         private TextBox textBox4;
+        private Button button1;
+        private DataGridView dataGridView1;
     }
 }

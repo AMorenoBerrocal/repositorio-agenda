@@ -1,3 +1,5 @@
+using System.Data.SqlTypes;
+
 namespace AgendaBeca
 {
     public partial class Form1 : Form
@@ -35,6 +37,11 @@ namespace AgendaBeca
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }
