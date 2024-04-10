@@ -40,9 +40,9 @@
             label2 = new Label();
             id = new Label();
             aniadir = new Button();
-            dataGridView1 = new DataGridView();
+            viewContactos = new DataGridView();
             groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
@@ -81,6 +81,7 @@
             txtObservaciones.Name = "txtObservaciones";
             txtObservaciones.Size = new Size(515, 113);
             txtObservaciones.TabIndex = 7;
+            txtObservaciones.TextChanged += txtObservaciones_TextChanged;
             // 
             // txtTelefono
             // 
@@ -162,29 +163,30 @@
             aniadir.UseVisualStyleBackColor = true;
             aniadir.Click += aniadir_Click;
             // 
-            // dataGridView1
+            // viewContactos
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(28, 407);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 62;
-            dataGridView1.RowTemplate.Height = 33;
-            dataGridView1.Size = new Size(1050, 302);
-            dataGridView1.TabIndex = 2;
+            viewContactos.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            viewContactos.Location = new Point(28, 426);
+            viewContactos.Name = "viewContactos";
+            viewContactos.RowHeadersWidth = 62;
+            viewContactos.RowTemplate.Height = 33;
+            viewContactos.Size = new Size(1029, 273);
+            viewContactos.TabIndex = 2;
+            viewContactos.CellContentClick += dataGridView1_CellContentClick_1;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 734);
-            Controls.Add(dataGridView1);
+            Controls.Add(viewContactos);
             Controls.Add(aniadir);
             Controls.Add(groupBox1);
             Name = "Form1";
             Text = "Form1";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)viewContactos).EndInit();
             ResumeLayout(false);
         }
 
@@ -202,6 +204,6 @@
         private DateTimePicker txtFechaNacimiento;
         private TextBox txtObservaciones;
         private Button aniadir;
-        private DataGridView dataGridView1;
+        private DataGridView viewContactos;
     }
 }
