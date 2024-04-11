@@ -5,7 +5,6 @@ namespace AgendaBeca
 {
     public partial class Form1 : Form
     {
-
         Repositorio repos = new Repositorio();
         private bool datosPorConfirmar = false;
         private bool readOnly = true;
@@ -14,6 +13,7 @@ namespace AgendaBeca
         {
             InitializeComponent();
             repos.BinData(viewContactos);
+            imagen = new PictureBox();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -48,13 +48,14 @@ namespace AgendaBeca
 
         private void aniadir_Click(object sender, EventArgs e)
         {
-            if(!datosPorConfirmar && readOnly)
+            if (!datosPorConfirmar && readOnly)
             {
                 txtId.Text = "";
                 txtNombre.Text = "";
                 txtTelefono.Text = "";
                 txtFechaNacimiento.Text = "";
                 txtObservaciones.Text = "";
+                imagen.Image = null;
                 datosPorConfirmar = true;
             }
 
@@ -62,7 +63,8 @@ namespace AgendaBeca
 
         private void Eliminar_Click(object sender, EventArgs e)
         {
-            if(!datosPorConfirmar && readOnly) {
+            if (!datosPorConfirmar && readOnly)
+            {
                 Context.con.Open();
 
                 if (estaEnBDD(txtId.Text))
@@ -70,7 +72,8 @@ namespace AgendaBeca
                     SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
                     com.Parameters.AddWithValue("@Id", txtId.Text);
                     com.ExecuteNonQuery();
-                } else
+                }
+                else
                 {
                     MessageBox.Show("El usuario no existe");
                 }
@@ -89,7 +92,8 @@ namespace AgendaBeca
                 {
                     seleccionarFila();
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Seleccione un usuario");
             }
@@ -108,11 +112,11 @@ namespace AgendaBeca
 
         private void Guardar_Click(object sender, EventArgs e)
         {
-            if(datosPorConfirmar)
+            if (datosPorConfirmar)
             {
                 guardarDatos();
             }
-            if(!readOnly)
+            if (!readOnly)
             {
                 modificarDatos();
             }
@@ -134,7 +138,7 @@ namespace AgendaBeca
         {
             Context.con.Open();
 
-            if(estaEnBDD(txtId.Text))
+            if (estaEnBDD(txtId.Text))
             {
                 SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
                 com.Parameters.AddWithValue("@Id", txtId.Text);
@@ -143,7 +147,8 @@ namespace AgendaBeca
                 com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
                 com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
                 com.ExecuteNonQuery();
-            } else
+            }
+            else
             {
                 Context.con.Close();
                 guardarDatos();
@@ -169,6 +174,15 @@ namespace AgendaBeca
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
             Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+            
+            if(imagen.Image != null)
+            {
+                Context.cmd.Parameters.AddWithValue("@Imagen", imagenToBase64(imagen.Image));
+            } else
+            {
+                Context.cmd.Parameters.AddWithValue("@Imagen", DBNull.Value);
+            }
+
             Context.cmd.ExecuteNonQuery();
 
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
@@ -182,6 +196,17 @@ namespace AgendaBeca
             datosPorConfirmar = false;
         }
 
+        private string imagenToBase64(Image imagen)
+        {
+            //Abrimos la imagen y nos aseguramos de que se cierre bien
+            using (MemoryStream ms = new MemoryStream())
+            {
+                imagen.Save(ms, imagen.RawFormat);
+                byte[] imagenBytes = ms.ToArray();
+                return Convert.ToBase64String(imagenBytes);
+            }
+        }
+
         public void seleccionarFila()
         {
             DataGridViewRow filaSeleccionada = viewContactos.SelectedRows[0];
@@ -190,7 +215,25 @@ namespace AgendaBeca
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
             txtTelefono.Text = filaSeleccionada.Cells["Telefono"].Value.ToString();
+            if (filaSeleccionada.Cells["Imagen"].Value is Image)
+            {
+                Image image = (Image)filaSeleccionada.Cells["Imagen"].Value;
+            } else
+            {
+                imagen.Image = null;
+            }
             readOnly = false;
+        }
+
+        public void cargarImagen()
+        {
+            OpenFileDialog abrirImagen = new OpenFileDialog();
+            abrirImagen.Filter = "Archivos de imagen (*.jpg;*.jpeg;*.gif;*.png)|*.jpg;*.jpeg;*.gif;*.png|Todos los archivos (*.*)|*.*\";\r\n ";
+
+            if(abrirImagen.ShowDialog() == DialogResult.OK)
+            {
+                imagen.Image = Image.FromFile(abrirImagen.FileName);
+            }
         }
 
 
@@ -215,5 +258,9 @@ namespace AgendaBeca
 
         }
 
+        private void imagen_Click(object sender, EventArgs e)
+        {
+            cargarImagen();
+        }
     }
 }

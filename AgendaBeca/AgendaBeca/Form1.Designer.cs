@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            imagen = new PictureBox();
             txtFechaNacimiento = new DateTimePicker();
             txtObservaciones = new TextBox();
             txtTelefono = new TextBox();
@@ -46,11 +47,13 @@
             Guardar = new Button();
             Cancelar = new Button();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)imagen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(imagen);
             groupBox1.Controls.Add(txtFechaNacimiento);
             groupBox1.Controls.Add(txtObservaciones);
             groupBox1.Controls.Add(txtTelefono);
@@ -69,6 +72,16 @@
             groupBox1.Text = "Contacto:";
             groupBox1.Enter += groupBox1_Enter;
             // 
+            // imagen
+            // 
+            imagen.Location = new Point(617, 30);
+            imagen.Name = "imagen";
+            imagen.Size = new Size(207, 267);
+            imagen.SizeMode = PictureBoxSizeMode.Zoom;
+            imagen.TabIndex = 9;
+            imagen.TabStop = false;
+            imagen.Click += imagen_Click;
+            // 
             // txtFechaNacimiento
             // 
             txtFechaNacimiento.Format = DateTimePickerFormat.Short;
@@ -80,10 +93,10 @@
             // 
             // txtObservaciones
             // 
-            txtObservaciones.Location = new Point(245, 178);
+            txtObservaciones.Location = new Point(245, 184);
             txtObservaciones.Multiline = true;
             txtObservaciones.Name = "txtObservaciones";
-            txtObservaciones.Size = new Size(515, 113);
+            txtObservaciones.Size = new Size(336, 113);
             txtObservaciones.TabIndex = 7;
             txtObservaciones.TextChanged += txtObservaciones_TextChanged;
             // 
@@ -234,6 +247,7 @@
             Text = "Form1";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)imagen).EndInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).EndInit();
             ResumeLayout(false);
         }
@@ -257,5 +271,6 @@
         private Button Modificar;
         private Button Guardar;
         private Button Cancelar;
+        private PictureBox imagen;
     }
 }
