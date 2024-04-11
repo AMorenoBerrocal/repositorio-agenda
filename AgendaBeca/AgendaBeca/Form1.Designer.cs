@@ -42,6 +42,7 @@
             aniadir = new Button();
             viewContactos = new DataGridView();
             Eliminar = new Button();
+            Modificar = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
@@ -185,11 +186,22 @@
             Eliminar.UseVisualStyleBackColor = true;
             Eliminar.Click += Eliminar_Click;
             // 
+            // Modificar
+            // 
+            Modificar.Location = new Point(375, 351);
+            Modificar.Name = "Modificar";
+            Modificar.Size = new Size(112, 34);
+            Modificar.TabIndex = 4;
+            Modificar.Text = "Modificar";
+            Modificar.UseVisualStyleBackColor = true;
+            Modificar.Click += Modificar_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 734);
+            Controls.Add(Modificar);
             Controls.Add(Eliminar);
             Controls.Add(viewContactos);
             Controls.Add(aniadir);
@@ -218,5 +230,6 @@
         private Button aniadir;
         private DataGridView viewContactos;
         private Button Eliminar;
+        private Button Modificar;
     }
 }

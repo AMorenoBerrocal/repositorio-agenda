@@ -6,9 +6,12 @@ namespace AgendaBeca
     public partial class Form1 : Form
     {
 
+        Repositorio repos = new Repositorio();
+
         public Form1()
         {
             InitializeComponent();
+            repos.BinData(viewContactos);
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -72,9 +75,25 @@ namespace AgendaBeca
         private void Eliminar_Click(object sender, EventArgs e)
         {
             Context.con.Open();
-            SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id");
-            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
+
+            SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
+            com.Parameters.AddWithValue("@Id", txtId.Text);
+            com.ExecuteNonQuery();
+
+            Context.con.Close();
+
+            repos.BinData(viewContactos);
         }
+
+        private void Modificar_Click(object sender, EventArgs e)
+        {
+            Context.con.Open();
+
+
+
+            Context.con.Close();
+        }
+
 
         private void txtObservaciones_TextChanged(object sender, EventArgs e)
         {
