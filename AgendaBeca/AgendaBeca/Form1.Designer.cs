@@ -43,6 +43,8 @@
             viewContactos = new DataGridView();
             Eliminar = new Button();
             Modificar = new Button();
+            Guardar = new Button();
+            Cancelar = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
@@ -161,7 +163,7 @@
             aniadir.Name = "aniadir";
             aniadir.Size = new Size(112, 34);
             aniadir.TabIndex = 1;
-            aniadir.Text = "Añadir";
+            aniadir.Text = "Nuevo";
             aniadir.UseVisualStyleBackColor = true;
             aniadir.Click += aniadir_Click;
             // 
@@ -178,7 +180,7 @@
             // 
             // Eliminar
             // 
-            Eliminar.Location = new Point(196, 351);
+            Eliminar.Location = new Point(183, 351);
             Eliminar.Name = "Eliminar";
             Eliminar.Size = new Size(112, 34);
             Eliminar.TabIndex = 3;
@@ -188,7 +190,7 @@
             // 
             // Modificar
             // 
-            Modificar.Location = new Point(375, 351);
+            Modificar.Location = new Point(353, 351);
             Modificar.Name = "Modificar";
             Modificar.Size = new Size(112, 34);
             Modificar.TabIndex = 4;
@@ -196,11 +198,33 @@
             Modificar.UseVisualStyleBackColor = true;
             Modificar.Click += Modificar_Click;
             // 
+            // Guardar
+            // 
+            Guardar.Location = new Point(612, 351);
+            Guardar.Name = "Guardar";
+            Guardar.Size = new Size(112, 34);
+            Guardar.TabIndex = 5;
+            Guardar.Text = "Guardar";
+            Guardar.UseVisualStyleBackColor = true;
+            Guardar.Click += Guardar_Click;
+            // 
+            // Cancelar
+            // 
+            Cancelar.Location = new Point(746, 351);
+            Cancelar.Name = "Cancelar";
+            Cancelar.Size = new Size(112, 34);
+            Cancelar.TabIndex = 6;
+            Cancelar.Text = "Cancelar";
+            Cancelar.UseVisualStyleBackColor = true;
+            Cancelar.Click += Cancelar_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 734);
+            Controls.Add(Cancelar);
+            Controls.Add(Guardar);
             Controls.Add(Modificar);
             Controls.Add(Eliminar);
             Controls.Add(viewContactos);
@@ -231,5 +255,7 @@
         private DataGridView viewContactos;
         private Button Eliminar;
         private Button Modificar;
+        private Button Guardar;
+        private Button Cancelar;
     }
 }
