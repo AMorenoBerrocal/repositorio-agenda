@@ -46,29 +46,11 @@ namespace AgendaBeca
 
         private void aniadir_Click(object sender, EventArgs e)
         {
-            Context.con.Open();
-
-            // Habilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand enableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto ON", Context.con);
-            enableIdentityInsertCmd.ExecuteNonQuery();
-
-            // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones)", Context.con);
-            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text); 
-            Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
-            Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
-            Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
-            Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-            Context.cmd.ExecuteNonQuery();
-
-            // Deshabilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand disableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto OFF", Context.con);
-            disableIdentityInsertCmd.ExecuteNonQuery();
-
-            Context.con.Close();
-
-            Repositorio repos = new Repositorio();
-            repos.BinData(viewContactos);
+            txtId.Text = "";
+            txtNombre.Text = "";
+            txtTelefono.Text = "";
+            txtFechaNacimiento.Text = "";
+            txtObservaciones.Text = "";
 
         }
 
@@ -90,7 +72,7 @@ namespace AgendaBeca
             Context.con.Open();
 
             SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
-            com.Parameters.AddWithValue("@Id", txtId.Text); 
+            com.Parameters.AddWithValue("@Id", txtId.Text);
             com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
             com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
@@ -98,6 +80,42 @@ namespace AgendaBeca
             com.ExecuteNonQuery();
 
             Context.con.Close();
+            repos.BinData(viewContactos);
+        }
+
+        private void Cancelar_Click(object sender, EventArgs e)
+        {
+            txtId.Text = "";
+            txtNombre.Text = "";
+            txtTelefono.Text = "";
+            txtFechaNacimiento.Text = "";
+            txtObservaciones.Text = "";
+        }
+
+        private void Guardar_Click(object sender, EventArgs e)
+        {
+            Context.con.Open();
+
+            // Habilitar IDENTITY_INSERT para la tabla Contacto
+            SqlCommand enableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto ON", Context.con);
+            enableIdentityInsertCmd.ExecuteNonQuery();
+
+            // Insertar el nuevo registro con el valor explícito para la columna Id
+            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones)", Context.con);
+            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
+            Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
+            Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
+            Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
+            Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+            Context.cmd.ExecuteNonQuery();
+
+            // Deshabilitar IDENTITY_INSERT para la tabla Contacto
+            SqlCommand disableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto OFF", Context.con);
+            disableIdentityInsertCmd.ExecuteNonQuery();
+
+            Context.con.Close();
+
+            Repositorio repos = new Repositorio();
             repos.BinData(viewContactos);
         }
 
