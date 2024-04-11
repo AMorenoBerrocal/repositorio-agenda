@@ -54,7 +54,7 @@ namespace AgendaBeca
 
             // Insertar el nuevo registro con el valor explícito para la columna Id
             Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones)", Context.con);
-            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text); // Valor explícito para el Id
+            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text); 
             Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
@@ -89,9 +89,16 @@ namespace AgendaBeca
         {
             Context.con.Open();
 
-
+            SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
+            com.Parameters.AddWithValue("@Id", txtId.Text); 
+            com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
+            com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
+            com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
+            com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+            com.ExecuteNonQuery();
 
             Context.con.Close();
+            repos.BinData(viewContactos);
         }
 
 
