@@ -7,6 +7,8 @@ namespace AgendaBeca
     {
 
         Repositorio repos = new Repositorio();
+        private bool datosPorConfirmar = false;
+        private bool readOnly = true;
 
         public Form1()
         {
@@ -46,41 +48,39 @@ namespace AgendaBeca
 
         private void aniadir_Click(object sender, EventArgs e)
         {
-            txtId.Text = "";
-            txtNombre.Text = "";
-            txtTelefono.Text = "";
-            txtFechaNacimiento.Text = "";
-            txtObservaciones.Text = "";
+            if(!datosPorConfirmar && readOnly)
+            {
+                txtId.Text = "";
+                txtNombre.Text = "";
+                txtTelefono.Text = "";
+                txtFechaNacimiento.Text = "";
+                txtObservaciones.Text = "";
+                datosPorConfirmar = true;
+            }
 
         }
 
         private void Eliminar_Click(object sender, EventArgs e)
         {
-            Context.con.Open();
+            if(!datosPorConfirmar && readOnly) {
+                Context.con.Open();
 
-            SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
-            com.Parameters.AddWithValue("@Id", txtId.Text);
-            com.ExecuteNonQuery();
+                SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
+                com.Parameters.AddWithValue("@Id", txtId.Text);
+                com.ExecuteNonQuery();
 
-            Context.con.Close();
+                Context.con.Close();
 
-            repos.BinData(viewContactos);
+                repos.BinData(viewContactos);
+            }
         }
 
         private void Modificar_Click(object sender, EventArgs e)
         {
-            Context.con.Open();
-
-            SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
-            com.Parameters.AddWithValue("@Id", txtId.Text);
-            com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
-            com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
-            com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
-            com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-            com.ExecuteNonQuery();
-
-            Context.con.Close();
-            repos.BinData(viewContactos);
+            if (!datosPorConfirmar)
+            {
+                seleccionarFila();
+            }
         }
 
         private void Cancelar_Click(object sender, EventArgs e)
@@ -90,9 +90,59 @@ namespace AgendaBeca
             txtTelefono.Text = "";
             txtFechaNacimiento.Text = "";
             txtObservaciones.Text = "";
+            datosPorConfirmar = false;
+            readOnly = true;
         }
 
         private void Guardar_Click(object sender, EventArgs e)
+        {
+            if(datosPorConfirmar)
+            {
+                guardarDatos();
+            }
+            if(!readOnly)
+            {
+                modificarDatos();
+            }
+        }
+
+        public bool estaEnBDD(string id)
+        {
+            bool existe = false;
+
+            SqlCommand com = new SqlCommand("SELECT COUNT(*) FROM Contacto WHERE Id = @Id", Context.con);
+            com.Parameters.AddWithValue("@Id", id);
+            int count = (int)com.ExecuteScalar();
+            existe = (count > 0);
+
+            return existe;
+        }
+
+        public void modificarDatos()
+        {
+            Context.con.Open();
+
+            if(estaEnBDD(txtId.Text))
+            {
+                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
+                com.Parameters.AddWithValue("@Id", txtId.Text);
+                com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
+                com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
+                com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
+                com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+                com.ExecuteNonQuery();
+            } else
+            {
+                Context.con.Close();
+                guardarDatos();
+            }
+
+            Context.con.Close();
+            repos.BinData(viewContactos);
+            readOnly = true;
+        }
+
+        public void guardarDatos()
         {
             Context.con.Open();
 
@@ -117,7 +167,20 @@ namespace AgendaBeca
 
             Repositorio repos = new Repositorio();
             repos.BinData(viewContactos);
+            datosPorConfirmar = false;
         }
+
+        public void seleccionarFila()
+        {
+            DataGridViewRow filaSeleccionada = viewContactos.SelectedRows[0];
+            txtId.Text = filaSeleccionada.Cells["Id"].Value.ToString();
+            txtNombre.Text = filaSeleccionada.Cells["Nombre"].Value.ToString();
+            txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
+            txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
+            txtTelefono.Text = filaSeleccionada.Cells["Telefono"].Value.ToString();
+            readOnly = false;
+        }
+
 
 
         private void txtObservaciones_TextChanged(object sender, EventArgs e)
