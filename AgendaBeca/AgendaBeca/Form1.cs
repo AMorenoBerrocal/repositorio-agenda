@@ -5,6 +5,7 @@ namespace AgendaBeca
 {
     public partial class Form1 : Form
     {
+
         Repositorio repos = new Repositorio();
         private bool datosPorConfirmar = false;
         private bool readOnly = true;
@@ -13,7 +14,6 @@ namespace AgendaBeca
         {
             InitializeComponent();
             repos.BinData(viewContactos);
-            imagen = new PictureBox();
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -168,21 +168,14 @@ namespace AgendaBeca
             enableIdentityInsertCmd.ExecuteNonQuery();
 
             // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones)", Context.con);
+            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
             Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
             Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
             Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-            
-            if(imagen.Image != null)
-            {
-                Context.cmd.Parameters.AddWithValue("@Imagen", imagenToBase64(imagen.Image));
-            } else
-            {
-                Context.cmd.Parameters.AddWithValue("@Imagen", DBNull.Value);
-            }
-
+            byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+            Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
             Context.cmd.ExecuteNonQuery();
 
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
@@ -215,13 +208,7 @@ namespace AgendaBeca
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
             txtTelefono.Text = filaSeleccionada.Cells["Telefono"].Value.ToString();
-            if (filaSeleccionada.Cells["Imagen"].Value is Image)
-            {
-                Image image = (Image)filaSeleccionada.Cells["Imagen"].Value;
-            } else
-            {
-                imagen.Image = null;
-            }
+
             readOnly = false;
         }
 

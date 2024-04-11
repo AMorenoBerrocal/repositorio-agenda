@@ -46,6 +46,7 @@
             Modificar = new Button();
             Guardar = new Button();
             Cancelar = new Button();
+            Subir = new Button();
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)imagen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
@@ -53,6 +54,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(Subir);
             groupBox1.Controls.Add(imagen);
             groupBox1.Controls.Add(txtFechaNacimiento);
             groupBox1.Controls.Add(txtObservaciones);
@@ -76,7 +78,7 @@
             // 
             imagen.Location = new Point(617, 30);
             imagen.Name = "imagen";
-            imagen.Size = new Size(207, 267);
+            imagen.Size = new Size(198, 199);
             imagen.SizeMode = PictureBoxSizeMode.Zoom;
             imagen.TabIndex = 9;
             imagen.TabStop = false;
@@ -231,6 +233,15 @@
             Cancelar.UseVisualStyleBackColor = true;
             Cancelar.Click += Cancelar_Click;
             // 
+            // Subir
+            // 
+            Subir.Location = new Point(617, 254);
+            Subir.Name = "Subir";
+            Subir.Size = new Size(198, 34);
+            Subir.TabIndex = 7;
+            Subir.Text = "Subir";
+            Subir.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -272,5 +283,6 @@
         private Button Guardar;
         private Button Cancelar;
         private PictureBox imagen;
+        private Button Subir;
     }
 }
