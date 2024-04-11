@@ -65,9 +65,15 @@ namespace AgendaBeca
             if(!datosPorConfirmar && readOnly) {
                 Context.con.Open();
 
-                SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
-                com.Parameters.AddWithValue("@Id", txtId.Text);
-                com.ExecuteNonQuery();
+                if (estaEnBDD(txtId.Text))
+                {
+                    SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
+                    com.Parameters.AddWithValue("@Id", txtId.Text);
+                    com.ExecuteNonQuery();
+                } else
+                {
+                    MessageBox.Show("El usuario no existe");
+                }
 
                 Context.con.Close();
 
@@ -77,9 +83,15 @@ namespace AgendaBeca
 
         private void Modificar_Click(object sender, EventArgs e)
         {
-            if (!datosPorConfirmar)
+            try
             {
-                seleccionarFila();
+                if (!datosPorConfirmar)
+                {
+                    seleccionarFila();
+                }
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Seleccione un usuario");
             }
         }
 
