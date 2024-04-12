@@ -1,5 +1,6 @@
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Windows.Forms;
 
 namespace AgendaBeca
 {
@@ -14,6 +15,8 @@ namespace AgendaBeca
         {
             InitializeComponent();
             repos.BinData(viewContactos);
+            txtId.ReadOnly = true;
+            txtId.Text = "Bienvenido";
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -69,13 +72,20 @@ namespace AgendaBeca
 
                 if (estaEnBDD(txtId.Text))
                 {
-                    SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
-                    com.Parameters.AddWithValue("@Id", txtId.Text);
-                    com.ExecuteNonQuery();
+                    repos.eliminarUsuario(txtId.Text);
                 }
                 else
                 {
                     MessageBox.Show("El usuario no existe");
+                }
+
+                if (viewContactos.Rows.Count > 0)
+                {
+                    // Selecciona la primera fila
+                    viewContactos.Rows[0].Selected = true;
+
+                    // Llama al evento CellClick para simular la selección de la fila y desencadenar cualquier lógica asociada
+                    dataGridView1_CellContentClick_1(viewContactos, new DataGridViewCellEventArgs(0, 0));
                 }
 
                 Context.con.Close();
@@ -138,10 +148,18 @@ namespace AgendaBeca
         public void modificarDatos()
         {
             Context.con.Open();
+            SqlTransaction trans = Context.con.BeginTransaction();
 
-            if (estaEnBDD(txtId.Text))
+            try
             {
-                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones, Imagen = @Imagen WHERE Id = @Id", Context.con);
+                SqlCommand com = new SqlCommand("UPDATE Contacto " +
+                    "SET Nombre = @Nombre, " +
+                    "FechaNacimiento = @FechaNacimiento, " +
+                    "Telefono = @Telefono, " +
+                    "Observaciones = @Observaciones, " +
+                    "Imagen = @Imagen" +
+                    " WHERE Id = @Id", Context.con);
+                com.Transaction = trans;
                 com.Parameters.AddWithValue("@Id", txtId.Text);
                 com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
                 com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
@@ -150,14 +168,16 @@ namespace AgendaBeca
                 byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
                 com.Parameters.AddWithValue("@Imagen", imagenBytes);
                 com.ExecuteNonQuery();
-            }
-            else
+
+                trans.Commit();
+
+            } catch (Exception ex)
+            {
+                trans.Rollback();
+            } finally
             {
                 Context.con.Close();
-                guardarDatos();
             }
-
-            Context.con.Close();
             repos.BinData(viewContactos);
             readOnly = true;
         }
@@ -165,39 +185,57 @@ namespace AgendaBeca
         public void guardarDatos()
         {
             Context.con.Open();
+            SqlTransaction trans = Context.con.BeginTransaction();
 
-            // Habilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand enableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto ON", Context.con);
-            enableIdentityInsertCmd.ExecuteNonQuery();
+            try
+            {
+                // Crear el comando y asignar la transacción
+                Context.cmd = new SqlCommand("INSERT INTO Contacto " +
+                    "(Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) " +
+                    "VALUES(@Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
+                Context.cmd.Transaction = trans;
 
-            // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
-            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
-            Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
-            Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
-            Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
-            Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-            if(imagen.Image != null)
-            {
-                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
-                Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
-            } else
-            {
-                byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
-                Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+                // Asignar parámetros al comando
+                Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
+                Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
+                Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
+                Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+
+                if (imagen.Image != null)
+                {
+                    byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                    Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
+                }
+                else
+                {
+                    byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
+                    Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+                }
+
+                // Ejecutar el comando
+                Context.cmd.ExecuteNonQuery();
+
+                // Confirmar la transacción
+                trans.Commit();
+
             }
-            Context.cmd.ExecuteNonQuery();
+            catch (Exception ex)
+            {
+                // Revertir la transacción en caso de error
+                trans.Rollback();
+            }
+            finally
+            {
+                // Cerrar la conexión
+                Context.con.Close();
+            }
 
-            // Deshabilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand disableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto OFF", Context.con);
-            disableIdentityInsertCmd.ExecuteNonQuery();
-
-            Context.con.Close();
-
+            // Actualizar la vista de datos
             Repositorio repos = new Repositorio();
             repos.BinData(viewContactos);
             datosPorConfirmar = false;
         }
+
 
         private string imagenToBase64(Image imagen)
         {
@@ -219,6 +257,7 @@ namespace AgendaBeca
         {
             DataGridViewRow filaSeleccionada = viewContactos.SelectedRows[0];
             txtId.Text = filaSeleccionada.Cells["Id"].Value.ToString();
+            txtId.ReadOnly = true;
             txtNombre.Text = filaSeleccionada.Cells["Nombre"].Value.ToString();
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
