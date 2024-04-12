@@ -106,6 +106,7 @@ namespace AgendaBeca
             txtTelefono.Text = "";
             txtFechaNacimiento.Text = "";
             txtObservaciones.Text = "";
+            imagen.Image = null;
             datosPorConfirmar = false;
             readOnly = true;
         }
@@ -140,12 +141,14 @@ namespace AgendaBeca
 
             if (estaEnBDD(txtId.Text))
             {
-                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
+                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones, Imagen = @Imagen WHERE Id = @Id", Context.con);
                 com.Parameters.AddWithValue("@Id", txtId.Text);
                 com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
                 com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
                 com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
                 com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                com.Parameters.AddWithValue("@Imagen", imagenBytes);
                 com.ExecuteNonQuery();
             }
             else
@@ -191,12 +194,19 @@ namespace AgendaBeca
 
         private string imagenToBase64(Image imagen)
         {
-            //Abrimos la imagen y nos aseguramos de que se cierre bien
-            using (MemoryStream ms = new MemoryStream())
+            try
             {
-                imagen.Save(ms, imagen.RawFormat);
-                byte[] imagenBytes = ms.ToArray();
-                return Convert.ToBase64String(imagenBytes);
+                //Abrimos la imagen y nos aseguramos de que se cierre bien
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    imagen.Save(ms, imagen.RawFormat);
+                    byte[] imagenBytes = ms.ToArray();
+                    return Convert.ToBase64String(imagenBytes);
+                }
+            } catch (Exception ex)
+            {
+                MessageBox.Show("Imagen no válida");
+                return null;
             }
         }
 
@@ -208,8 +218,20 @@ namespace AgendaBeca
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
             txtTelefono.Text = filaSeleccionada.Cells["Telefono"].Value.ToString();
+            byte[] imagenBytes = (byte[])filaSeleccionada.Cells["Imagen"].Value;
+
+            imagen.Image = byteArrayToImagen(imagenBytes);
 
             readOnly = false;
+        }
+
+        public Image byteArrayToImagen(byte[] byteArray)
+        {
+            using (MemoryStream ms = new MemoryStream(byteArray))
+            {
+                Image returnImage = Image.FromStream(ms);
+                return returnImage;
+            }
         }
 
         public void cargarImagen()
