@@ -48,13 +48,14 @@ namespace AgendaBeca
 
         private void aniadir_Click(object sender, EventArgs e)
         {
-            if(!datosPorConfirmar && readOnly)
+            if (!datosPorConfirmar && readOnly)
             {
                 txtId.Text = "";
                 txtNombre.Text = "";
                 txtTelefono.Text = "";
                 txtFechaNacimiento.Text = "";
                 txtObservaciones.Text = "";
+                imagen.Image = null;
                 datosPorConfirmar = true;
             }
 
@@ -62,7 +63,8 @@ namespace AgendaBeca
 
         private void Eliminar_Click(object sender, EventArgs e)
         {
-            if(!datosPorConfirmar && readOnly) {
+            if (!datosPorConfirmar && readOnly)
+            {
                 Context.con.Open();
 
                 if (estaEnBDD(txtId.Text))
@@ -70,7 +72,8 @@ namespace AgendaBeca
                     SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
                     com.Parameters.AddWithValue("@Id", txtId.Text);
                     com.ExecuteNonQuery();
-                } else
+                }
+                else
                 {
                     MessageBox.Show("El usuario no existe");
                 }
@@ -89,7 +92,8 @@ namespace AgendaBeca
                 {
                     seleccionarFila();
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show("Seleccione un usuario");
             }
@@ -102,17 +106,18 @@ namespace AgendaBeca
             txtTelefono.Text = "";
             txtFechaNacimiento.Text = "";
             txtObservaciones.Text = "";
+            imagen.Image = null;
             datosPorConfirmar = false;
             readOnly = true;
         }
 
         private void Guardar_Click(object sender, EventArgs e)
         {
-            if(datosPorConfirmar)
+            if (datosPorConfirmar)
             {
                 guardarDatos();
             }
-            if(!readOnly)
+            if (!readOnly)
             {
                 modificarDatos();
             }
@@ -134,16 +139,19 @@ namespace AgendaBeca
         {
             Context.con.Open();
 
-            if(estaEnBDD(txtId.Text))
+            if (estaEnBDD(txtId.Text))
             {
-                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones WHERE Id = @Id", Context.con);
+                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones, Imagen = @Imagen WHERE Id = @Id", Context.con);
                 com.Parameters.AddWithValue("@Id", txtId.Text);
                 com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
                 com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
                 com.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
                 com.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                com.Parameters.AddWithValue("@Imagen", imagenBytes);
                 com.ExecuteNonQuery();
-            } else
+            }
+            else
             {
                 Context.con.Close();
                 guardarDatos();
@@ -163,12 +171,21 @@ namespace AgendaBeca
             enableIdentityInsertCmd.ExecuteNonQuery();
 
             // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones)", Context.con);
+            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
             Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
             Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
             Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+            if(imagen.Image != null)
+            {
+                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
+            } else
+            {
+                byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
+                Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+            }
             Context.cmd.ExecuteNonQuery();
 
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
@@ -182,6 +199,22 @@ namespace AgendaBeca
             datosPorConfirmar = false;
         }
 
+        private string imagenToBase64(Image imagen)
+        {
+            if(imagen!=null)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    imagen.Save(ms, imagen.RawFormat);
+                    byte[] imagenBytes = ms.ToArray();
+                    return Convert.ToBase64String(imagenBytes);
+                }
+            } else
+            {
+                return null;
+            }
+        }
+
         public void seleccionarFila()
         {
             DataGridViewRow filaSeleccionada = viewContactos.SelectedRows[0];
@@ -190,7 +223,31 @@ namespace AgendaBeca
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
             txtTelefono.Text = filaSeleccionada.Cells["Telefono"].Value.ToString();
+            byte[] imagenBytes = (byte[])filaSeleccionada.Cells["Imagen"].Value;
+
+            imagen.Image = byteArrayToImagen(imagenBytes);
+
             readOnly = false;
+        }
+
+        public Image byteArrayToImagen(byte[] byteArray)
+        {
+            using (MemoryStream ms = new MemoryStream(byteArray))
+            {
+                Image returnImage = Image.FromStream(ms);
+                return returnImage;
+            }
+        }
+
+        public void cargarImagen()
+        {
+            OpenFileDialog abrirImagen = new OpenFileDialog();
+            abrirImagen.Filter = "Archivos de imagen (*.jpg;*.jpeg;*.gif;*.png)|*.jpg;*.jpeg;*.gif;*.png|Todos los archivos (*.*)|*.*\";\r\n ";
+
+            if(abrirImagen.ShowDialog() == DialogResult.OK)
+            {
+                imagen.Image = Image.FromFile(abrirImagen.FileName);
+            }
         }
 
 
@@ -215,5 +272,9 @@ namespace AgendaBeca
 
         }
 
+        private void imagen_Click(object sender, EventArgs e)
+        {
+            cargarImagen();
+        }
     }
 }
