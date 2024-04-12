@@ -177,8 +177,15 @@ namespace AgendaBeca
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
             Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-            byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
-            Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
+            if(imagen.Image != null)
+            {
+                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
+            } else
+            {
+                byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
+                Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+            }
             Context.cmd.ExecuteNonQuery();
 
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
@@ -194,18 +201,16 @@ namespace AgendaBeca
 
         private string imagenToBase64(Image imagen)
         {
-            try
+            if(imagen!=null)
             {
-                //Abrimos la imagen y nos aseguramos de que se cierre bien
                 using (MemoryStream ms = new MemoryStream())
                 {
                     imagen.Save(ms, imagen.RawFormat);
                     byte[] imagenBytes = ms.ToArray();
                     return Convert.ToBase64String(imagenBytes);
                 }
-            } catch (Exception ex)
+            } else
             {
-                MessageBox.Show("Imagen no válida");
                 return null;
             }
         }
