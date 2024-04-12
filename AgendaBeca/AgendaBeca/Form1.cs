@@ -16,6 +16,7 @@ namespace AgendaBeca
             InitializeComponent();
             repos.BinData(viewContactos);
             txtId.ReadOnly = true;
+            txtId.Text = "Bienvenido";
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -147,7 +148,10 @@ namespace AgendaBeca
         public void modificarDatos()
         {
             Context.con.Open();
+            SqlTransaction trans = Context.con.BeginTransaction();
 
+            try
+            {
                 SqlCommand com = new SqlCommand("UPDATE Contacto " +
                     "SET Nombre = @Nombre, " +
                     "FechaNacimiento = @FechaNacimiento, " +
@@ -155,6 +159,7 @@ namespace AgendaBeca
                     "Observaciones = @Observaciones, " +
                     "Imagen = @Imagen" +
                     " WHERE Id = @Id", Context.con);
+                com.Transaction = trans;
                 com.Parameters.AddWithValue("@Id", txtId.Text);
                 com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
                 com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
@@ -163,9 +168,16 @@ namespace AgendaBeca
                 byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
                 com.Parameters.AddWithValue("@Imagen", imagenBytes);
                 com.ExecuteNonQuery();
-            
 
-            Context.con.Close();
+                trans.Commit();
+
+            } catch (Exception ex)
+            {
+                trans.Rollback();
+            } finally
+            {
+                Context.con.Close();
+            }
             repos.BinData(viewContactos);
             readOnly = true;
         }
