@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             groupBox1 = new GroupBox();
             imagen = new PictureBox();
             txtFechaNacimiento = new DateTimePicker();
@@ -46,7 +47,7 @@
             Modificar = new Button();
             Guardar = new Button();
             Cancelar = new Button();
-            Subir = new Button();
+            contextMenuStrip1 = new ContextMenuStrip(components);
             groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)imagen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
@@ -54,7 +55,6 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(Subir);
             groupBox1.Controls.Add(imagen);
             groupBox1.Controls.Add(txtFechaNacimiento);
             groupBox1.Controls.Add(txtObservaciones);
@@ -78,7 +78,7 @@
             // 
             imagen.Location = new Point(617, 30);
             imagen.Name = "imagen";
-            imagen.Size = new Size(198, 199);
+            imagen.Size = new Size(198, 267);
             imagen.SizeMode = PictureBoxSizeMode.Zoom;
             imagen.TabIndex = 9;
             imagen.TabStop = false;
@@ -233,14 +233,11 @@
             Cancelar.UseVisualStyleBackColor = true;
             Cancelar.Click += Cancelar_Click;
             // 
-            // Subir
+            // contextMenuStrip1
             // 
-            Subir.Location = new Point(617, 254);
-            Subir.Name = "Subir";
-            Subir.Size = new Size(198, 34);
-            Subir.TabIndex = 7;
-            Subir.Text = "Subir";
-            Subir.UseVisualStyleBackColor = true;
+            contextMenuStrip1.ImageScalingSize = new Size(24, 24);
+            contextMenuStrip1.Name = "contextMenuStrip1";
+            contextMenuStrip1.Size = new Size(241, 37);
             // 
             // Form1
             // 
@@ -283,6 +280,6 @@
         private Button Guardar;
         private Button Cancelar;
         private PictureBox imagen;
-        private Button Subir;
+        private ContextMenuStrip contextMenuStrip1;
     }
 }

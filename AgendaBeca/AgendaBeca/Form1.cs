@@ -148,8 +148,6 @@ namespace AgendaBeca
         {
             Context.con.Open();
 
-            if (estaEnBDD(txtId.Text))
-            {
                 SqlCommand com = new SqlCommand("UPDATE Contacto " +
                     "SET Nombre = @Nombre, " +
                     "FechaNacimiento = @FechaNacimiento, " +
@@ -165,12 +163,7 @@ namespace AgendaBeca
                 byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
                 com.Parameters.AddWithValue("@Imagen", imagenBytes);
                 com.ExecuteNonQuery();
-            }
-            else
-            {
-                Context.con.Close();
-                guardarDatos();
-            }
+            
 
             Context.con.Close();
             repos.BinData(viewContactos);
@@ -180,45 +173,57 @@ namespace AgendaBeca
         public void guardarDatos()
         {
             Context.con.Open();
+            SqlTransaction trans = Context.con.BeginTransaction();
 
-            // Habilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand enableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto ON", Context.con);
-            enableIdentityInsertCmd.ExecuteNonQuery();
-
-            // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto " +
-                "(Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) " +
-                "VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
-            Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
-            Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
-            Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
-            Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
-            Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
-
-
-            if(imagen.Image != null)
+            try
             {
-                byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
-                Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
-            } else
+                // Crear el comando y asignar la transacción
+                Context.cmd = new SqlCommand("INSERT INTO Contacto " +
+                    "(Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) " +
+                    "VALUES(@Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
+                Context.cmd.Transaction = trans;
+
+                // Asignar parámetros al comando
+                Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
+                Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
+                Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
+                Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+
+                if (imagen.Image != null)
+                {
+                    byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
+                    Context.cmd.Parameters.AddWithValue("@Imagen", imagenBytes);
+                }
+                else
+                {
+                    byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
+                    Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+                }
+
+                // Ejecutar el comando
+                Context.cmd.ExecuteNonQuery();
+
+                // Confirmar la transacción
+                trans.Commit();
+
+            }
+            catch (Exception ex)
             {
-                byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
-                Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
+                // Revertir la transacción en caso de error
+                trans.Rollback();
+            }
+            finally
+            {
+                // Cerrar la conexión
+                Context.con.Close();
             }
 
-
-            Context.cmd.ExecuteNonQuery();
-
-            // Deshabilitar IDENTITY_INSERT para la tabla Contacto
-            SqlCommand disableIdentityInsertCmd = new SqlCommand("SET IDENTITY_INSERT Contacto OFF", Context.con);
-            disableIdentityInsertCmd.ExecuteNonQuery();
-
-            Context.con.Close();
-
+            // Actualizar la vista de datos
             Repositorio repos = new Repositorio();
             repos.BinData(viewContactos);
             datosPorConfirmar = false;
         }
+
 
         private string imagenToBase64(Image imagen)
         {
