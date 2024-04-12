@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            imagen = new PictureBox();
             txtFechaNacimiento = new DateTimePicker();
             txtObservaciones = new TextBox();
             txtTelefono = new TextBox();
@@ -42,12 +43,19 @@
             aniadir = new Button();
             viewContactos = new DataGridView();
             Eliminar = new Button();
+            Modificar = new Button();
+            Guardar = new Button();
+            Cancelar = new Button();
+            Subir = new Button();
             groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)imagen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).BeginInit();
             SuspendLayout();
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(Subir);
+            groupBox1.Controls.Add(imagen);
             groupBox1.Controls.Add(txtFechaNacimiento);
             groupBox1.Controls.Add(txtObservaciones);
             groupBox1.Controls.Add(txtTelefono);
@@ -66,6 +74,16 @@
             groupBox1.Text = "Contacto:";
             groupBox1.Enter += groupBox1_Enter;
             // 
+            // imagen
+            // 
+            imagen.Location = new Point(617, 30);
+            imagen.Name = "imagen";
+            imagen.Size = new Size(198, 199);
+            imagen.SizeMode = PictureBoxSizeMode.Zoom;
+            imagen.TabIndex = 9;
+            imagen.TabStop = false;
+            imagen.Click += imagen_Click;
+            // 
             // txtFechaNacimiento
             // 
             txtFechaNacimiento.Format = DateTimePickerFormat.Short;
@@ -77,10 +95,10 @@
             // 
             // txtObservaciones
             // 
-            txtObservaciones.Location = new Point(245, 178);
+            txtObservaciones.Location = new Point(245, 184);
             txtObservaciones.Multiline = true;
             txtObservaciones.Name = "txtObservaciones";
-            txtObservaciones.Size = new Size(515, 113);
+            txtObservaciones.Size = new Size(336, 113);
             txtObservaciones.TabIndex = 7;
             txtObservaciones.TextChanged += txtObservaciones_TextChanged;
             // 
@@ -160,7 +178,7 @@
             aniadir.Name = "aniadir";
             aniadir.Size = new Size(112, 34);
             aniadir.TabIndex = 1;
-            aniadir.Text = "Añadir";
+            aniadir.Text = "Nuevo";
             aniadir.UseVisualStyleBackColor = true;
             aniadir.Click += aniadir_Click;
             // 
@@ -177,7 +195,7 @@
             // 
             // Eliminar
             // 
-            Eliminar.Location = new Point(196, 351);
+            Eliminar.Location = new Point(183, 351);
             Eliminar.Name = "Eliminar";
             Eliminar.Size = new Size(112, 34);
             Eliminar.TabIndex = 3;
@@ -185,11 +203,53 @@
             Eliminar.UseVisualStyleBackColor = true;
             Eliminar.Click += Eliminar_Click;
             // 
+            // Modificar
+            // 
+            Modificar.Location = new Point(353, 351);
+            Modificar.Name = "Modificar";
+            Modificar.Size = new Size(112, 34);
+            Modificar.TabIndex = 4;
+            Modificar.Text = "Modificar";
+            Modificar.UseVisualStyleBackColor = true;
+            Modificar.Click += Modificar_Click;
+            // 
+            // Guardar
+            // 
+            Guardar.Location = new Point(612, 351);
+            Guardar.Name = "Guardar";
+            Guardar.Size = new Size(112, 34);
+            Guardar.TabIndex = 5;
+            Guardar.Text = "Guardar";
+            Guardar.UseVisualStyleBackColor = true;
+            Guardar.Click += Guardar_Click;
+            // 
+            // Cancelar
+            // 
+            Cancelar.Location = new Point(746, 351);
+            Cancelar.Name = "Cancelar";
+            Cancelar.Size = new Size(112, 34);
+            Cancelar.TabIndex = 6;
+            Cancelar.Text = "Cancelar";
+            Cancelar.UseVisualStyleBackColor = true;
+            Cancelar.Click += Cancelar_Click;
+            // 
+            // Subir
+            // 
+            Subir.Location = new Point(617, 254);
+            Subir.Name = "Subir";
+            Subir.Size = new Size(198, 34);
+            Subir.TabIndex = 7;
+            Subir.Text = "Subir";
+            Subir.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1150, 734);
+            Controls.Add(Cancelar);
+            Controls.Add(Guardar);
+            Controls.Add(Modificar);
             Controls.Add(Eliminar);
             Controls.Add(viewContactos);
             Controls.Add(aniadir);
@@ -198,6 +258,7 @@
             Text = "Form1";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)imagen).EndInit();
             ((System.ComponentModel.ISupportInitialize)viewContactos).EndInit();
             ResumeLayout(false);
         }
@@ -218,5 +279,10 @@
         private Button aniadir;
         private DataGridView viewContactos;
         private Button Eliminar;
+        private Button Modificar;
+        private Button Guardar;
+        private Button Cancelar;
+        private PictureBox imagen;
+        private Button Subir;
     }
 }
