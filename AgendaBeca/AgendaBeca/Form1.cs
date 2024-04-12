@@ -1,5 +1,6 @@
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Windows.Forms;
 
 namespace AgendaBeca
 {
@@ -14,6 +15,7 @@ namespace AgendaBeca
         {
             InitializeComponent();
             repos.BinData(viewContactos);
+            txtId.ReadOnly = true;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -69,13 +71,20 @@ namespace AgendaBeca
 
                 if (estaEnBDD(txtId.Text))
                 {
-                    SqlCommand com = new SqlCommand("DELETE FROM Contacto WHERE Id = @Id", Context.con);
-                    com.Parameters.AddWithValue("@Id", txtId.Text);
-                    com.ExecuteNonQuery();
+                    repos.eliminarUsuario(txtId.Text);
                 }
                 else
                 {
                     MessageBox.Show("El usuario no existe");
+                }
+
+                if (viewContactos.Rows.Count > 0)
+                {
+                    // Selecciona la primera fila
+                    viewContactos.Rows[0].Selected = true;
+
+                    // Llama al evento CellClick para simular la selección de la fila y desencadenar cualquier lógica asociada
+                    dataGridView1_CellContentClick_1(viewContactos, new DataGridViewCellEventArgs(0, 0));
                 }
 
                 Context.con.Close();
@@ -141,7 +150,13 @@ namespace AgendaBeca
 
             if (estaEnBDD(txtId.Text))
             {
-                SqlCommand com = new SqlCommand("UPDATE Contacto SET Nombre = @Nombre, FechaNacimiento = @FechaNacimiento, Telefono = @Telefono, Observaciones = @Observaciones, Imagen = @Imagen WHERE Id = @Id", Context.con);
+                SqlCommand com = new SqlCommand("UPDATE Contacto " +
+                    "SET Nombre = @Nombre, " +
+                    "FechaNacimiento = @FechaNacimiento, " +
+                    "Telefono = @Telefono, " +
+                    "Observaciones = @Observaciones, " +
+                    "Imagen = @Imagen" +
+                    " WHERE Id = @Id", Context.con);
                 com.Parameters.AddWithValue("@Id", txtId.Text);
                 com.Parameters.AddWithValue("@Nombre", txtNombre.Text);
                 com.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
@@ -171,12 +186,16 @@ namespace AgendaBeca
             enableIdentityInsertCmd.ExecuteNonQuery();
 
             // Insertar el nuevo registro con el valor explícito para la columna Id
-            Context.cmd = new SqlCommand("INSERT INTO Contacto (Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
+            Context.cmd = new SqlCommand("INSERT INTO Contacto " +
+                "(Id, Nombre, FechaNacimiento, Telefono, Observaciones, Imagen) " +
+                "VALUES(@Id, @Nombre, @FechaNacimiento, @Telefono, @Observaciones, @Imagen)", Context.con);
             Context.cmd.Parameters.AddWithValue("@Id", txtId.Text);
             Context.cmd.Parameters.AddWithValue("@Nombre", txtNombre.Text);
             Context.cmd.Parameters.AddWithValue("@FechaNacimiento", txtFechaNacimiento.Text);
             Context.cmd.Parameters.AddWithValue("@Telefono", txtTelefono.Text);
             Context.cmd.Parameters.AddWithValue("@Observaciones", txtObservaciones.Text);
+
+
             if(imagen.Image != null)
             {
                 byte[] imagenBytes = Convert.FromBase64String(imagenToBase64(imagen.Image));
@@ -186,6 +205,8 @@ namespace AgendaBeca
                 byte[] imagenPorDefecto = Convert.FromBase64String(imagenToBase64(Resource1.chico));
                 Context.cmd.Parameters.AddWithValue("@Imagen", imagenPorDefecto);
             }
+
+
             Context.cmd.ExecuteNonQuery();
 
             // Deshabilitar IDENTITY_INSERT para la tabla Contacto
@@ -219,6 +240,7 @@ namespace AgendaBeca
         {
             DataGridViewRow filaSeleccionada = viewContactos.SelectedRows[0];
             txtId.Text = filaSeleccionada.Cells["Id"].Value.ToString();
+            txtId.ReadOnly = true;
             txtNombre.Text = filaSeleccionada.Cells["Nombre"].Value.ToString();
             txtFechaNacimiento.Text = filaSeleccionada.Cells["FechaNacimiento"].Value.ToString();
             txtObservaciones.Text = filaSeleccionada.Cells["Observaciones"].Value.ToString();
